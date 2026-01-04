@@ -1,0 +1,8 @@
+# Backups de bases de datos
+*.sql.backup
+*.bak
+*.dump
+
+# Archivos temporales
+*.tmp
+*~
