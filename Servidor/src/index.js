@@ -7,7 +7,9 @@ const http = require("http");
 const { Server } = require("socket.io");
 const morgan = require("morgan");
 const { networkInterfaces } = require("os");
-const db = require("./database/db");  // ← AGREGADO
+const db = require("./database/db"); 
+const setupSocketHandlers = require('./routes/socketHandler');
+
 
 // Crear la aplicación Express
 const app = express();
@@ -43,29 +45,15 @@ app.get("/", (req, res) => {
 });
 
 // Rutas de prueba
-app.use("/api/test", require("./routes/test"));  // ← AGREGADO
+app.use("/api/test", require("./routes/test")); 
 
-// Importar rutas adicionales (las crearemos después)
-// app.use("/api/users", require("./routes/users"));
-// app.use("/api/games", require("./routes/games"));
+// Rutas de salas
+app.use("/api/rooms", require("./routes/rooms"));
 
 // ============================================
 // SOCKET.IO - CONEXIONES EN TIEMPO REAL
 // ============================================
-io.on("connection", (socket) => {
-    const address = socket.request.connection;
-    console.log(`✅ Socket conectado: ${address.remoteAddress}:${address.remotePort}`);
-    
-    socket.on("disconnect", () => {
-        console.log(`❌ Socket desconectado`);
-    });
-    
-    // Evento de prueba
-    socket.on("test_message", (msg) => {
-        console.log("📨 Mensaje recibido:", msg);
-        io.emit("test_response", { message: "Servidor recibió: " + msg });
-    });
-});
+setupSocketHandlers(io);
 
 // ============================================
 // INICIAR SERVIDOR
