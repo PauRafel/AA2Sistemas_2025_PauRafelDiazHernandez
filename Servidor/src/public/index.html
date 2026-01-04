@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Columns Online - Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ee5a6f;
+        }
+
+        .room-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .room-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .room-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .room-item h3 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .room-item p {
+            color: #666;
+            font-size: 0.9em;
+            margin: 3px 0;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .status.waiting {
+            background: #ffeaa7;
+            color: #d63031;
+        }
+
+        .status.in-progress {
+            background: #55efc4;
+            color: #00b894;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .user-info strong {
+            color: #333;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn:hover {
+            background: #764ba2;
+        }
+
+        .control-btn.wide {
+            grid-column: span 3;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .score-display h2 {
+            font-size: 3em;
+            margin: 10px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .control-btn.wide {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Columns Online</h1>
+            <p>Cliente de Control</p>
+        </div>
+
+        <div class="content">
+            <!-- Alerta global -->
+            <div id="alert" class="alert"></div>
+
+            <!-- SECCIÓN: Login -->
+            <div id="loginSection" class="section active">
+                <h2 style="margin-bottom: 20px;">Iniciar Sesión</h2>
+                <div class="form-group">
+                    <label for="username">Nombre de usuario:</label>
+                    <input type="text" id="username" placeholder="Ingresa tu nombre">
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" placeholder="Ingresa tu contraseña">
+                </div>
+                <button class="btn btn-primary" onclick="login()">Entrar</button>
+            </div>
+
+            <!-- SECCIÓN: Lobby (Lista de salas) -->
+            <div id="lobbySection" class="section">
+                <div class="user-info">
+                    <p><strong>Usuario:</strong> <span id="currentUsername"></span></p>
+                    <p><strong>ID:</strong> <span id="currentUserId"></span></p>
+                </div>
+
+                <h2 style="margin-bottom: 15px;">Salas Disponibles</h2>
+                
+                <div class="room-list" id="roomList">
+                    <div class="loading">Cargando salas...</div>
+                </div>
+
+                <button class="btn btn-primary" onclick="createRoom()">➕ Crear Nueva Sala</button>
+                <button class="btn btn-secondary" onclick="refreshRooms()">🔄 Actualizar Lista</button>
+                <button class="btn btn-danger" onclick="logout()">🚪 Cerrar Sesión</button>
+            </div>
+
+            <!-- SECCIÓN: Sala (Esperando/Jugando) -->
+            <div id="roomSection" class="section">
+                <div class="user-info">
+                    <p><strong>Sala:</strong> <span id="roomId"></span></p>
+                    <p><strong>Estado:</strong> <span id="roomStatus"></span></p>
+                    <p><strong>Jugadores:</strong> <span id="playerCount"></span></p>
+                </div>
+
+                <!-- Puntuación -->
+                <div id="scoreDisplay" class="score-display" style="display: none;">
+                    <p style="font-size: 0.9em; margin: 0;">Tu Puntuación</p>
+                    <h2 id="playerScore">0</h2>
+                </div>
+
+                <!-- Controles del juego -->
+                <div id="gameControls" style="display: none;">
+                    <h3 style="margin-bottom: 15px; text-align: center;">Controles</h3>
+                    <div class="controls">
+                        <button class="control-btn" onclick="sendCommand('rotate')">🔄<br>Rotar</button>
+                        <button class="control-btn" onclick="sendCommand('soft_drop')">⬇️<br>Bajar</button>
+                        <button class="control-btn" onclick="sendCommand('hard_drop')">⏬<br>Drop</button>
+                        <button class="control-btn" onclick="sendCommand('move_left')">⬅️<br>Izq</button>
+                        <button class="control-btn"></button>
+                        <button class="control-btn" onclick="sendCommand('move_right')">➡️<br>Der</button>
+                    </div>
+                    <p style="margin-top: 15px; text-align: center; color: #666; font-size: 0.9em;">
+                        💡 También puedes usar las flechas del teclado
+                    </p>
+                </div>
+
+                <button class="btn btn-danger" onclick="leaveRoom()" style="margin-top: 20px;">🚪 Salir de la Sala</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <!-- JavaScript del cliente -->
+    <script src="client.js"></script>
+</body>
+</html>
