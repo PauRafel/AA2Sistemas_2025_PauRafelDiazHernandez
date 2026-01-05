@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4485a74aae9afe94099f7afb87a8892c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverUrlLink: http://10.0.2.15:3000
+  serverUrlLink: http://192.168.0.178:3000
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
