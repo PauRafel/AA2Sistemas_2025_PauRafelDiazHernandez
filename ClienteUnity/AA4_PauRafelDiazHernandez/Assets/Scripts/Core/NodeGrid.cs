@@ -105,7 +105,7 @@ public class NodeGrid : MonoBehaviour
     [SerializeField] private Color colorYellow = Color.yellow;
     [SerializeField] private Color colorOrange = new Color(1f, 0.5f, 0f);
     [SerializeField] private Color colorPurple = new Color(0.5f, 0f, 1f);
-    [SerializeField] private Color colorEmpty = new Color(0.2f, 0.2f, 0.2f);
+    [SerializeField] private Color colorEmpty = new Color(0.1f, 0.1f, 0.1f);
 
     private Grid _grid;
     private GameObject[,] visualCells;
@@ -161,7 +161,7 @@ public class NodeGrid : MonoBehaviour
         {
             for (int y = 0; y < gridSizeY; y++)
             {
-                Vector3 position = new Vector3(x * cellSize, y * cellSize, 0);
+                Vector3 position = new Vector3(x * cellSize, (gridSizeY - 1 - y) * cellSize, 0);
 
                 GameObject cell;
                 if (cellPrefab != null)
@@ -179,22 +179,67 @@ public class NodeGrid : MonoBehaviour
                 cell.name = $"Cell_{x}_{y}";
                 visualCells[x, y] = cell;
 
-                UpdateVisualCell(x, y, Node.JewelType.None);
+                SetCellColor(cell, colorEmpty);
             }
         }
 
         CenterCamera();
+        CreateGridBorder();
     }
 
     void UpdateVisualCell(int x, int y, Node.JewelType type)
     {
         if (visualCells == null || visualCells[x, y] == null) return;
 
-        var renderer = visualCells[x, y].GetComponent<Renderer>();
+        Color targetColor = GetColorForJewelType(type);
+        SetCellColor(visualCells[x, y], targetColor);
+    }
+
+    void SetCellColor(GameObject cell, Color color)
+    {
+        var renderer = cell.GetComponent<Renderer>();
         if (renderer != null)
         {
-            renderer.material.color = GetColorForJewelType(type);
+            if (Application.isPlaying)
+            {
+                Material mat = new Material(Shader.Find("Unlit/Color"));
+                mat.color = color;
+                renderer.material = mat;
+            }
+            else
+            {
+                if (renderer.sharedMaterial == null || renderer.sharedMaterial.shader.name != "Unlit/Color")
+                {
+                    renderer.sharedMaterial = new Material(Shader.Find("Unlit/Color"));
+                }
+                renderer.sharedMaterial.color = color;
+            }
         }
+    }
+
+    void CreateGridBorder()
+    {
+        LineRenderer lineRenderer = GetComponent<LineRenderer>();
+        if (lineRenderer == null)
+        {
+            lineRenderer = gameObject.AddComponent<LineRenderer>();
+        }
+
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.startColor = Color.white;
+        lineRenderer.endColor = Color.white;
+
+        Vector3[] borderPoints = new Vector3[5];
+        borderPoints[0] = new Vector3(-cellSize * 0.5f, -cellSize * 0.5f, 0);
+        borderPoints[1] = new Vector3((gridSizeX - 0.5f) * cellSize, -cellSize * 0.5f, 0);
+        borderPoints[2] = new Vector3((gridSizeX - 0.5f) * cellSize, (gridSizeY - 0.5f) * cellSize, 0);
+        borderPoints[3] = new Vector3(-cellSize * 0.5f, (gridSizeY - 0.5f) * cellSize, 0);
+        borderPoints[4] = borderPoints[0];
+
+        lineRenderer.positionCount = 5;
+        lineRenderer.SetPositions(borderPoints);
     }
 
     Color GetColorForJewelType(Node.JewelType type)
@@ -244,14 +289,18 @@ public class NodeGrid : MonoBehaviour
             playerId = 1,
             playerName = "Test Player",
             updatedNodes = new List<Node>
-            {
-                new Node(Node.JewelType.Red, 0, 11),
-                new Node(Node.JewelType.Green, 1, 11),
-                new Node(Node.JewelType.Blue, 2, 11),
-                new Node(Node.JewelType.Yellow, 3, 11),
-                new Node(Node.JewelType.Orange, 4, 11),
-                new Node(Node.JewelType.Purple, 5, 11)
-            }
+        {
+            new Node(Node.JewelType.Red, 0, 11),
+            new Node(Node.JewelType.Green, 1, 11),
+            new Node(Node.JewelType.Blue, 2, 11),
+            new Node(Node.JewelType.Yellow, 3, 11),
+            new Node(Node.JewelType.Orange, 4, 11),
+            new Node(Node.JewelType.Purple, 5, 11),
+            
+            new Node(Node.JewelType.Red, 0, 10),
+            new Node(Node.JewelType.Blue, 2, 10),
+            new Node(Node.JewelType.Green, 1, 9),
+        }
         };
 
         UpdateGrid(testUpdate);
