@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\paura\\Desktop\\AA2Sistemas_2025_PauRafelDiazHernandez\\ClienteUnity\\AA4_PauRafelDiazHernandez\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DD1D457F-FA33-DE89-132E-9094C4D8474F}|Assembly-CSharp.csproj|c:\\users\\paura\\desktop\\aa2sistemas_2025_paurafeldiazhernandez\\clienteunity\\aa4_paurafeldiazhernandez\\assets\\scripts\\core\\unitymainthreaddispatcher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DD1D457F-FA33-DE89-132E-9094C4D8474F}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\unitymainthreaddispatcher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DD1D457F-FA33-DE89-132E-9094C4D8474F}|Assembly-CSharp.csproj|c:\\users\\paura\\desktop\\aa2sistemas_2025_paurafeldiazhernandez\\clienteunity\\aa4_paurafeldiazhernandez\\assets\\scripts\\ui\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DD1D457F-FA33-DE89-132E-9094C4D8474F}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UnityMainThreadDispatcher.cs",
+              "DocumentMoniker": "C:\\Users\\paura\\Desktop\\AA2Sistemas_2025_PauRafelDiazHernandez\\ClienteUnity\\AA4_PauRafelDiazHernandez\\Assets\\Scripts\\Core\\UnityMainThreadDispatcher.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\UnityMainThreadDispatcher.cs",
+              "ToolTip": "C:\\Users\\paura\\Desktop\\AA2Sistemas_2025_PauRafelDiazHernandez\\ClienteUnity\\AA4_PauRafelDiazHernandez\\Assets\\Scripts\\Core\\UnityMainThreadDispatcher.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Core\\UnityMainThreadDispatcher.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAAwwDwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-07T10:50:39.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UIManager.cs",
+              "DocumentMoniker": "C:\\Users\\paura\\Desktop\\AA2Sistemas_2025_PauRafelDiazHernandez\\ClienteUnity\\AA4_PauRafelDiazHernandez\\Assets\\Scripts\\UI\\UIManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\UIManager.cs",
+              "ToolTip": "C:\\Users\\paura\\Desktop\\AA2Sistemas_2025_PauRafelDiazHernandez\\ClienteUnity\\AA4_PauRafelDiazHernandez\\Assets\\Scripts\\UI\\UIManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\UIManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-07T10:47:48.932Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

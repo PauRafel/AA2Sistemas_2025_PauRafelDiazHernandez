@@ -1874,6 +1874,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1794087198}
   m_CullTransparentMesh: 1
+--- !u!1 &1902290555
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1902290557}
+  - component: {fileID: 1902290556}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1902290556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902290555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d52ad59a817a581449c69dbecd1e5724, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverConnection: {fileID: 451967315}
+  gameManager: {fileID: 1372126154}
+  roomItemPrefab: {fileID: 739825157743358819, guid: f294c1e5fd9b67747a588efc8e6fc100, type: 3}
+  roomListContent: {fileID: 669003843}
+  refreshButton: {fileID: 1500911001}
+  roomListPanel: {fileID: 1794087198}
+--- !u!4 &1902290557
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902290555}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 285.66742, y: 118.98218, z: -0.3601715}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1949161786
 GameObject:
   m_ObjectHideFlags: 0
@@ -1976,3 +2026,4 @@ SceneRoots:
   - {fileID: 1372126155}
   - {fileID: 1072871865}
   - {fileID: 325018048}
+  - {fileID: 1902290557}
