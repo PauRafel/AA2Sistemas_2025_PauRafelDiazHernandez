@@ -48,27 +48,21 @@ public class UIManager : MonoBehaviour
 
     void SubscribeToServerEvents()
     {
-        serverConnection.socket.On("room_list", response =>
+        if (serverConnection != null && serverConnection.OnRoomListReceived != null)
         {
-            var rooms = response.GetValue<JArray>();
-            OnRoomListReceived(rooms);
-        });
-
-        serverConnection.socket.On("room_list_updated", response =>
+            serverConnection.OnRoomListReceived.AddListener(OnRoomListReceived);
+            Debug.Log("UIManager subscribed to room list events");
+        }
+        else
         {
-            var rooms = response.GetValue<JArray>();
-            OnRoomListReceived(rooms);
-        });
+            Debug.LogError("ServerConnection or OnRoomListReceived is null!");
+        }
     }
 
     void OnRoomListReceived(JArray rooms)
     {
-        Debug.Log($"Received {rooms.Count} rooms");
-
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        {
-            UpdateRoomList(rooms);
-        });
+        Debug.Log($"UIManager received {rooms.Count} rooms");
+        UpdateRoomList(rooms);
     }
 
     void UpdateRoomList(JArray rooms)

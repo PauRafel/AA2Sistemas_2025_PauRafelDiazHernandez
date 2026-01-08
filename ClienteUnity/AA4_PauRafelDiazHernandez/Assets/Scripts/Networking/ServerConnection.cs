@@ -1,12 +1,15 @@
-using System;
-using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using UnityEngine;
-using Newtonsoft.Json.Linq;
 
 public class ServerConnection : MonoBehaviour
 {
+    private Queue<Action> mainThreadActions = new Queue<Action>();
+
     [Header("Server Settings")]
     public string serverUrlLink = "http://10.0.2.15:3000";
 
@@ -15,6 +18,9 @@ public class ServerConnection : MonoBehaviour
 
     [Header("Status")]
     public bool IsConnected => isConnected;
+
+    [Header("Events")]
+    public UnityEngine.Events.UnityEvent<JArray> OnRoomListReceived;
 
     void Start()
     {
@@ -46,14 +52,35 @@ public class ServerConnection : MonoBehaviour
 
         socket.On("room_list", response =>
         {
-            Debug.Log("Room list received");
-            var rooms = response.GetValue<JArray>();
-            Debug.Log($"Total rooms: {rooms.Count}");
-
-            foreach (var room in rooms)
+            Debug.Log("Room list received in ServerConnection");
+            try
             {
-                Debug.Log($"  - Room: {room["roomId"]}, Status: {room["status"]}, Players: {room["playerCount"]}");
+                JsonElement firstElement = response.GetValue(0);
+                string jsonString = firstElement.GetRawText();
+
+                Debug.Log($"JSON string: {jsonString}");
+
+                JArray rooms = JArray.Parse(jsonString);
+                Debug.Log($"Parsed {rooms.Count} rooms");
+
+                lock (mainThreadActions)
+                {
+                    mainThreadActions.Enqueue(() =>
+                    {
+                        OnRoomListReceived?.Invoke(rooms);
+                    });
+                }
             }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error: {ex.Message}");
+            }
+        });
+
+
+        socket.OnAny((eventName, response) =>
+        {
+            Debug.Log($"Event received: {eventName}");
         });
 
         socket.On("game_update", response =>
@@ -76,7 +103,16 @@ public class ServerConnection : MonoBehaviour
         }
 
         Debug.Log("Requesting room list...");
-        socket.EmitAsync("list_rooms");
+
+        try
+        {
+            socket.Emit("list_rooms");
+            Debug.Log("Emit sent successfully");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Error emitting: {ex.Message}");
+        }
     }
 
     public void SpectateRoom(string roomId)
@@ -105,9 +141,23 @@ public class ServerConnection : MonoBehaviour
 
     void Update()
     {
+        lock (mainThreadActions)
+        {
+            while (mainThreadActions.Count > 0)
+            {
+                mainThreadActions.Dequeue()?.Invoke();
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             RequestRoomList();
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Debug.Log("Sending test message...");
+            socket.Emit("test_message", "Hello from Unity!");
         }
     }
 
