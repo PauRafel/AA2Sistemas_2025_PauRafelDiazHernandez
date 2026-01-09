@@ -255,7 +255,6 @@ public class GameManager : MonoBehaviour
         if (gameViewPanel != null)
             gameViewPanel.SetActive(true);
 
-        PositionCameraForGame();
         UpdateRoomInfoText(roomId, "Conectando...");
     }
 
@@ -277,38 +276,6 @@ public class GameManager : MonoBehaviour
         if (roomInfoText != null)
         {
             roomInfoText.text = $"Sala: {roomId} | {status}";
-        }
-    }
-
-    void PositionCameraForGame()
-    {
-        Camera mainCam = Camera.main;
-        if (mainCam != null)
-        {
-            if (player1Grid != null && player2Grid != null)
-            {
-                float centerX = 0; 
-                float centerY = 5.5f; 
-                mainCam.transform.position = new Vector3(centerX, centerY, -15f);
-
-                if (mainCam.orthographic)
-                {
-                    mainCam.orthographicSize = 10f;
-                }
-            }
-            else if (player1Grid != null)
-            {
-                float centerX = player1Grid.transform.position.x + 2.5f;
-                float centerY = 5.5f;
-                mainCam.transform.position = new Vector3(centerX, centerY, -15f);
-
-                if (mainCam.orthographic)
-                {
-                    mainCam.orthographicSize = 8f;
-                }
-            }
-
-            Debug.Log($"Camera positioned at {mainCam.transform.position}");
         }
     }
 }
