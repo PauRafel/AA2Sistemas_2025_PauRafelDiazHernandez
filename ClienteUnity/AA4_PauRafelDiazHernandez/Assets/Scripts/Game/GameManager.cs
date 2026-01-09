@@ -1,8 +1,10 @@
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using TMPro;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -43,24 +45,69 @@ public class GameManager : MonoBehaviour
     {
         serverConnection.socket.On("spectate_started", response =>
         {
-            Debug.Log("Spectate started");
-            var data = response.GetValue<JObject>();
+            Debug.Log("Spectate started event received");
+            try
+            {
+                JsonElement firstElement = response.GetValue(0);
+                string jsonString = firstElement.GetRawText();
 
-            OnSpectateStarted(data);
+                Debug.Log($"Spectate started JSON: {jsonString}");
+
+                JObject data = JObject.Parse(jsonString);
+
+                UnityThread.executeInUpdate(() =>
+                {
+                    OnSpectateStarted(data);
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error in spectate_started: {ex.Message}\n{ex.StackTrace}");
+            }
         });
 
         serverConnection.socket.On("game_update", response =>
         {
-            var data = response.GetValue<JObject>();
-            OnGameUpdate(data);
+            try
+            {
+                JsonElement firstElement = response.GetValue(0);
+                string jsonString = firstElement.GetRawText();
+
+                JObject data = JObject.Parse(jsonString);
+
+                UnityThread.executeInUpdate(() =>
+                {
+                    OnGameUpdate(data);
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error in game_update: {ex.Message}");
+            }
         });
 
         serverConnection.socket.On("game_started", response =>
         {
             Debug.Log("Game started event received");
-            var data = response.GetValue<JObject>();
-            OnGameStarted(data);
+            try
+            {
+                JsonElement firstElement = response.GetValue(0);
+                string jsonString = firstElement.GetRawText();
+
+                JObject data = JObject.Parse(jsonString);
+
+                UnityThread.executeInUpdate(() =>
+                {
+                    OnGameStarted(data);
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error in game_started: {ex.Message}");
+            }
         });
+
+        Debug.Log("GameManager subscribed to all events");
     }
 
     void OnSpectateStarted(JObject data)
@@ -129,14 +176,24 @@ public class GameManager : MonoBehaviour
 
     void OnGameUpdate(JObject data)
     {
+        Debug.Log("Game update received in GameManager");
+
         int userId = data["userId"].Value<int>();
         var gameState = data["gameState"] as JObject;
+
+        Debug.Log($"  - User ID: {userId}");
+        Debug.Log($"  - Score: {gameState["score"]}");
 
         NodeGrid targetGrid = DetermineGridForPlayer(userId);
 
         if (targetGrid != null)
         {
+            Debug.Log($"  - Updating grid for player {userId}");
             UpdateGridFromGameState(targetGrid, gameState);
+        }
+        else
+        {
+            Debug.LogWarning($"  - No grid found for player {userId}");
         }
     }
 
@@ -198,6 +255,7 @@ public class GameManager : MonoBehaviour
         if (gameViewPanel != null)
             gameViewPanel.SetActive(true);
 
+        PositionCameraForGame();
         UpdateRoomInfoText(roomId, "Conectando...");
     }
 
@@ -219,6 +277,38 @@ public class GameManager : MonoBehaviour
         if (roomInfoText != null)
         {
             roomInfoText.text = $"Sala: {roomId} | {status}";
+        }
+    }
+
+    void PositionCameraForGame()
+    {
+        Camera mainCam = Camera.main;
+        if (mainCam != null)
+        {
+            if (player1Grid != null && player2Grid != null)
+            {
+                float centerX = 0; 
+                float centerY = 5.5f; 
+                mainCam.transform.position = new Vector3(centerX, centerY, -15f);
+
+                if (mainCam.orthographic)
+                {
+                    mainCam.orthographicSize = 10f;
+                }
+            }
+            else if (player1Grid != null)
+            {
+                float centerX = player1Grid.transform.position.x + 2.5f;
+                float centerY = 5.5f;
+                mainCam.transform.position = new Vector3(centerX, centerY, -15f);
+
+                if (mainCam.orthographic)
+                {
+                    mainCam.orthographicSize = 8f;
+                }
+            }
+
+            Debug.Log($"Camera positioned at {mainCam.transform.position}");
         }
     }
 }
