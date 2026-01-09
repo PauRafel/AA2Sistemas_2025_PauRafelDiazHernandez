@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,11 @@ public class GameManager : MonoBehaviour
     [Header("Current Room")]
     private string currentRoomId;
     private bool isSpectating = false;
+
+    [Header("UI References")]
+    [SerializeField] private GameObject gameViewPanel;
+    [SerializeField] private GameObject roomListPanel;
+    [SerializeField] private TextMeshProUGUI roomInfoText;
 
     void Start()
     {
@@ -64,6 +70,11 @@ public class GameManager : MonoBehaviour
         isSpectating = true;
 
         Debug.Log($"Now spectating room: {currentRoomId}");
+
+        int playerCount = roomInfo["playerCount"]?.Value<int>() ?? 0;
+        bool isPaused = roomInfo["isPaused"]?.Value<bool>() ?? false;
+        string statusText = isPaused ? "Pausado" : "En Juego";
+        UpdateRoomInfoText(currentRoomId, $"{playerCount}/2 | {statusText}");
 
         if (data["gameStates"] != null)
         {
@@ -174,6 +185,40 @@ public class GameManager : MonoBehaviour
             serverConnection.StopSpectating(currentRoomId);
             currentRoomId = null;
             isSpectating = false;
+        }
+    }
+
+    public void OnSpectateRoomUI(string roomId)
+    {
+        Debug.Log($"UI: Starting spectate for room {roomId}");
+
+        if (roomListPanel != null)
+            roomListPanel.SetActive(false);
+
+        if (gameViewPanel != null)
+            gameViewPanel.SetActive(true);
+
+        UpdateRoomInfoText(roomId, "Conectando...");
+    }
+
+    public void OnStopSpectatingUI()
+    {
+        Debug.Log("UI: Stopping spectate");
+
+        if (gameViewPanel != null)
+            gameViewPanel.SetActive(false);
+
+        if (roomListPanel != null)
+            roomListPanel.SetActive(true);
+
+        if (player1Grid != null){}
+    }
+
+    void UpdateRoomInfoText(string roomId, string status)
+    {
+        if (roomInfoText != null)
+        {
+            roomInfoText.text = $"Sala: {roomId} | {status}";
         }
     }
 }

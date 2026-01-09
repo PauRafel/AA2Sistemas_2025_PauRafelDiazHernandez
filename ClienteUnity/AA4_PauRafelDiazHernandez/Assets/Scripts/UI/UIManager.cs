@@ -156,6 +156,7 @@ public class UIManager : MonoBehaviour
 
         if (gameManager != null)
         {
+            gameManager.OnSpectateRoomUI(roomId);
             gameManager.SpectateRoom(roomId);
         }
     }

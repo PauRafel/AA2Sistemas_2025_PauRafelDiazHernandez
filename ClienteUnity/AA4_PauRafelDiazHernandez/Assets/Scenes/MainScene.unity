@@ -119,6 +119,61 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &60063967
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 60063969}
+  - component: {fileID: 60063968}
+  m_Layer: 0
+  m_Name: Player2Grid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &60063968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60063967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0824e49f525c0148921a99e38d76216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridSizeX: 6
+  gridSizeY: 12
+  cellSize: 1
+  cellPrefab: {fileID: 0}
+  colorRed: {r: 1, g: 0, b: 0, a: 1}
+  colorGreen: {r: 0, g: 1, b: 0, a: 1}
+  colorBlue: {r: 0, g: 0, b: 1, a: 1}
+  colorYellow: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  colorOrange: {r: 1, g: 0.5, b: 0, a: 1}
+  colorPurple: {r: 0.5, g: 0, b: 1, a: 1}
+  colorEmpty: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+--- !u!4 &60063969
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60063967}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &257219603
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,7 +256,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 257219606}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1372126154}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: StopSpectating
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &257219606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1971,7 +2038,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverConnection: {fileID: 451967315}
   player1Grid: {fileID: 1949161788}
-  player2Grid: {fileID: 0}
+  player2Grid: {fileID: 60063968}
+  gameViewPanel: {fileID: 1731913546}
+  roomListPanel: {fileID: 1794087198}
+  roomInfoText: {fileID: 1203934709}
 --- !u!4 &1372126155
 Transform:
   m_ObjectHideFlags: 0
@@ -2251,7 +2321,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1731913547
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2500,7 +2570,7 @@ Transform:
   m_GameObject: {fileID: 1949161786}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.40057242, y: -0.95179737, z: 0.030430706}
+  m_LocalPosition: {x: -3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2573,6 +2643,7 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 451967314}
   - {fileID: 1949161787}
+  - {fileID: 60063969}
   - {fileID: 1372126155}
   - {fileID: 1072871865}
   - {fileID: 325018048}
