@@ -116,7 +116,7 @@ class Room {
             if (!this.isPaused) {
                 this.updateGame();
             }
-        }, 100); // Actualizar cada 100ms
+        }, 33); // Actualizar cada 33ms
     }
 
     // Pausar el juego
