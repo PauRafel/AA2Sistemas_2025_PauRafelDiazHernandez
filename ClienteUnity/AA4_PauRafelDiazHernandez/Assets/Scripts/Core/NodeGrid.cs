@@ -166,14 +166,15 @@ public class NodeGrid : MonoBehaviour
                 GameObject cell;
                 if (cellPrefab != null)
                 {
-                    cell = Instantiate(cellPrefab, position, Quaternion.identity, transform);
+                    cell = Instantiate(cellPrefab, transform); 
+                    cell.transform.localPosition = position; 
                 }
                 else
                 {
                     cell = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    cell.transform.position = position;
+                    cell.transform.parent = transform; 
+                    cell.transform.localPosition = position; 
                     cell.transform.localScale = new Vector3(cellSize * 0.9f, cellSize * 0.9f, 0.1f);
-                    cell.transform.parent = transform;
                 }
 
                 cell.name = $"Cell_{x}_{y}";
@@ -224,6 +225,7 @@ public class NodeGrid : MonoBehaviour
             lineRenderer = gameObject.AddComponent<LineRenderer>();
         }
 
+        lineRenderer.useWorldSpace = false;
         lineRenderer.startWidth = 0.1f;
         lineRenderer.endWidth = 0.1f;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
