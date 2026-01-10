@@ -253,6 +253,32 @@ public class GameManager : MonoBehaviour
         }
 
         grid.UpdateGrid(gridUpdate);
+
+        if (gameState["currentPiece"] != null)
+        {
+            var currentPieceArray = gameState["currentPiece"] as JArray;
+            if (currentPieceArray != null && currentPieceArray.Count > 0)
+            {
+                List<NodeGrid.PiecePosition> piecePositions = new List<NodeGrid.PiecePosition>();
+
+                foreach (var pieceToken in currentPieceArray)
+                {
+                    var pos = new NodeGrid.PiecePosition
+                    {
+                        x = pieceToken["x"].Value<int>(),
+                        y = pieceToken["y"].Value<int>(),
+                        type = pieceToken["type"].Value<int>()
+                    };
+                    piecePositions.Add(pos);
+                }
+
+                grid.UpdateCurrentPiece(piecePositions);
+            }
+        }
+        else
+        {
+            grid.UpdateCurrentPiece(null);
+        }
     }
 
     NodeGrid DetermineGridForPlayer(int userId)

@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class NodeGrid : MonoBehaviour
 {
+    [Header("Current Piece Visualization")]
+    private List<GameObject> currentPieceCells = new List<GameObject>();
+    private List<PiecePosition> targetPiecePositions = new List<PiecePosition>(); 
+    private float interpolationSpeed = 5f;
+
     [Serializable]
     public class Node
     {
@@ -139,6 +144,59 @@ public class NodeGrid : MonoBehaviour
         }
     }
 
+    public void UpdateCurrentPiece(List<PiecePosition> piecePositions)
+    {
+        if (piecePositions == null || piecePositions.Count == 0)
+        {
+            foreach (var cell in currentPieceCells)
+            {
+                if (cell != null) Destroy(cell);
+            }
+            currentPieceCells.Clear();
+            targetPiecePositions.Clear();
+            return;
+        }
+
+        targetPiecePositions = new List<PiecePosition>(piecePositions);
+
+        if (currentPieceCells.Count == 0)
+        {
+            CreateCurrentPieceCells(piecePositions);
+        }
+    }
+
+    void CreateCurrentPieceCells(List<PiecePosition> piecePositions)
+    {
+        foreach (var pos in piecePositions)
+        {
+            Vector3 position = new Vector3(pos.x * cellSize, (gridSizeY - 1 - pos.y) * cellSize, -0.5f);
+
+            GameObject cell = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cell.transform.parent = transform;
+            cell.transform.localPosition = position;
+            cell.transform.localScale = new Vector3(cellSize * 0.9f, cellSize * 0.9f, 0.3f);
+            cell.name = $"CurrentPiece_{pos.x}_{pos.y}";
+
+            Material mat = new Material(Shader.Find("Unlit/Color"));
+            mat.color = GetColorForJewelType((Node.JewelType)pos.type);
+
+            Color c = mat.color;
+            c.a = 0.95f;
+            mat.color = c;
+
+            cell.GetComponent<Renderer>().material = mat;
+            currentPieceCells.Add(cell);
+        }
+    }
+
+    [System.Serializable]
+    public class PiecePosition
+    {
+        public int x;
+        public int y;
+        public int type;
+    }
+
     void CreateVisualGrid()
     {
         if (visualCells != null)
@@ -254,6 +312,44 @@ public class NodeGrid : MonoBehaviour
             case Node.JewelType.Orange: return colorOrange;
             case Node.JewelType.Purple: return colorPurple;
             default: return colorEmpty;
+        }
+    }
+
+    void Update()
+    {
+        if (currentPieceCells.Count > 0 && targetPiecePositions.Count > 0 &&
+            currentPieceCells.Count == targetPiecePositions.Count)
+        {
+            for (int i = 0; i < currentPieceCells.Count; i++)
+            {
+                if (currentPieceCells[i] != null && i < targetPiecePositions.Count)
+                {
+                    var targetPos = targetPiecePositions[i];
+                    Vector3 targetWorldPos = new Vector3(
+                        targetPos.x * cellSize,
+                        (gridSizeY - 1 - targetPos.y) * cellSize,
+                        -0.5f
+                    );
+
+                    currentPieceCells[i].transform.localPosition = Vector3.Lerp(
+                        currentPieceCells[i].transform.localPosition,
+                        targetWorldPos,
+                        Time.deltaTime * interpolationSpeed
+                    );
+
+                    var renderer = currentPieceCells[i].GetComponent<Renderer>();
+                    if (renderer != null)
+                    {
+                        Color targetColor = GetColorForJewelType((Node.JewelType)targetPos.type);
+                        targetColor.a = 0.95f;
+                        renderer.material.color = Color.Lerp(
+                            renderer.material.color,
+                            targetColor,
+                            Time.deltaTime * interpolationSpeed
+                        );
+                    }
+                }
+            }
         }
     }
 
