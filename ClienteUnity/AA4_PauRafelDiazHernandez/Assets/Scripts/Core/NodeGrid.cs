@@ -183,7 +183,6 @@ public class NodeGrid : MonoBehaviour
             }
         }
 
-        CenterCamera();
         CreateGridBorder();
     }
 
@@ -253,23 +252,6 @@ public class NodeGrid : MonoBehaviour
             case Node.JewelType.Orange: return colorOrange;
             case Node.JewelType.Purple: return colorPurple;
             default: return colorEmpty;
-        }
-    }
-
-    void CenterCamera()
-    {
-        Camera mainCam = Camera.main;
-        if (mainCam != null)
-        {
-            float centerX = (gridSizeX - 1) * cellSize / 2f;
-            float centerY = (gridSizeY - 1) * cellSize / 2f;
-
-            mainCam.transform.position = new Vector3(centerX, centerY, -15f);
-
-            if (mainCam.orthographic)
-            {
-                mainCam.orthographicSize = (gridSizeY * cellSize) / 1.5f;
-            }
         }
     }
 

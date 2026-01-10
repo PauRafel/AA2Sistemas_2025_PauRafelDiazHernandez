@@ -16,11 +16,14 @@ public class GameManager : MonoBehaviour
     [Header("Current Room")]
     private string currentRoomId;
     private bool isSpectating = false;
+    private Dictionary<int, NodeGrid> playerGridMap = new Dictionary<int, NodeGrid>();
 
     [Header("UI References")]
     [SerializeField] private GameObject gameViewPanel;
     [SerializeField] private GameObject roomListPanel;
     [SerializeField] private TextMeshProUGUI roomInfoText;
+    [SerializeField] private TextMeshProUGUI player1Label;
+    [SerializeField] private TextMeshProUGUI player2Label;
 
     void Start()
     {
@@ -157,21 +160,50 @@ public class GameManager : MonoBehaviour
     void SetupGridForPlayer(int playerIndex, int userId, JObject gameState)
     {
         NodeGrid targetGrid = playerIndex == 0 ? player1Grid : player2Grid;
-        if (targetGrid == null) return;
+        if (targetGrid == null)
+        {
+            Debug.LogWarning($"Grid for player index {playerIndex} is null");
+            return;
+        }
+
+        Debug.Log($"Setting up grid {playerIndex} (userId: {userId})");
+        Debug.Log($"Grid position: {targetGrid.transform.position}");
+        Debug.Log($"Grid local position: {targetGrid.transform.localPosition}");
 
         var gridData = gameState["grid"];
+        string playerName = gridData["playerName"]?.ToString() ?? $"Player {userId}";
 
         var gridSetup = new NodeGrid.GridSetup
         {
             playerId = userId,
-            playerName = gridData["playerName"]?.ToString() ?? $"Player {userId}",
+            playerName = playerName,
             sizeX = 6,
             sizeY = 12
         };
 
         targetGrid.SetupGrid(gridSetup);
 
+        playerGridMap[userId] = targetGrid;
+
+        UpdatePlayerLabel(targetGrid, playerName);
+
+        Debug.Log($"Grid {playerIndex} setup for user {userId} ({playerName})");
+
         UpdateGridFromGameState(targetGrid, gameState);
+    }
+
+    void UpdatePlayerLabel(NodeGrid grid, string playerName)
+    {
+        if (grid == player1Grid && player1Label != null)
+        {
+            player1Label.text = playerName;
+            player1Label.gameObject.SetActive(true);
+        }
+        else if (grid == player2Grid && player2Label != null)
+        {
+            player2Label.text = playerName;
+            player2Label.gameObject.SetActive(true);
+        }
     }
 
     void OnGameUpdate(JObject data)
@@ -225,9 +257,15 @@ public class GameManager : MonoBehaviour
 
     NodeGrid DetermineGridForPlayer(int userId)
     {
-        if (player1Grid != null && player1Grid.GetComponent<NodeGrid>()){}
+        if (playerGridMap.ContainsKey(userId))
+        {
+            Debug.Log($"Found grid for user {userId}");
+            return playerGridMap[userId];
+        }
 
-        return player1Grid; 
+        Debug.LogWarning($"No grid mapped for user {userId}");
+
+        return player1Grid;
     }
 
     public void SpectateRoom(string roomId)
@@ -260,15 +298,17 @@ public class GameManager : MonoBehaviour
 
     public void OnStopSpectatingUI()
     {
-        Debug.Log("UI: Stopping spectate");
+        Debug.Log("Stopping spectating from UI");
+        StopSpectating();
+
+        if (player1Label != null) player1Label.gameObject.SetActive(false);
+        if (player2Label != null) player2Label.gameObject.SetActive(false);
 
         if (gameViewPanel != null)
             gameViewPanel.SetActive(false);
 
         if (roomListPanel != null)
             roomListPanel.SetActive(true);
-
-        if (player1Grid != null){}
     }
 
     void UpdateRoomInfoText(string roomId, string status)
