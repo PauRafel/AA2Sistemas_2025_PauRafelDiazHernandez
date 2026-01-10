@@ -7,6 +7,7 @@ const roomManager = require('../game/RoomManager');
 const db = require('../database/db');
 
 function setupSocketHandlers(io) {
+    roomManager.setIO(io);
     io.on('connection', (socket) => {
         const address = socket.request.connection;
         console.log(`✅ Socket conectado: ${socket.id} [${address.remoteAddress}:${address.remotePort}]`);

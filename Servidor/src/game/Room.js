@@ -5,7 +5,7 @@
 const ColumnsGame = require('./ColumnsGame');
 
 class Room {
-    constructor(roomId, creatorPlayer) {
+    constructor(roomId, creatorPlayer, io) {
         this.roomId = roomId;
         this.players = [creatorPlayer]; // Array de Player
         this.games = {}; // { userId: ColumnsGame }
@@ -16,6 +16,9 @@ class Room {
         this.gameLoopInterval = null;
         this.dbGameId = null; // ID de la partida en la base de datos
         this.moveCounter = {}; // Contador de movimientos por jugador
+        this.updateCounter = 0;
+        this.broadcastInterval = 2;
+        this.io = io;
     }
 
     // Añadir jugador a la sala
@@ -151,23 +154,45 @@ class Room {
 
     // Actualizar estado del juego (llamado por el loop)
     updateGame() {
-        let anyGameOver = false;
+    let anyGameOver = false;
+    
+    this.updateCounter++; // ← NUEVO
 
-        // Actualizar cada juego
-        for (const userId in this.games) {
-            const game = this.games[userId];
-            if (!game.isGameOver) {
-                game.update();
-            } else {
-                anyGameOver = true;
+    // Actualizar cada juego
+    for (const userId in this.games) {
+        const game = this.games[userId];
+        if (!game.isGameOver) {
+            game.update();
+            
+            // ✨ Enviar estado solo cada N frames
+            if (this.updateCounter % this.broadcastInterval === 0) {
+                this.broadcastGameState(userId);
             }
-        }
-
-        // Si algún juego terminó, finalizar la partida
-        if (anyGameOver) {
-            this.finishGame();
+        } else {
+            anyGameOver = true;
         }
     }
+
+    // Si algún juego terminó, finalizar la partida
+    if (anyGameOver) {
+        this.finishGame();
+    }
+}
+
+// Enviar estado del juego
+broadcastGameState(userId) {
+    const game = this.games[userId];
+    if (!game || !this.io) return; // ← Verificar que io existe
+    
+    const gameState = game.getGameState();
+    
+    // Enviar a todos en la sala
+    this.io.to(this.roomId).emit('game_update', {
+        userId: parseInt(userId),
+        gameState: gameState,
+        moveNumber: this.moveCounter[userId] || 0
+    });
+}
 
     // Procesar movimiento de jugador
     processPlayerMove(userId, moveType) {

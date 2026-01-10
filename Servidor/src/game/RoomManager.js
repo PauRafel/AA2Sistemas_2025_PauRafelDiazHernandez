@@ -10,21 +10,26 @@ class RoomManager {
         this.playerToRoom = new Map(); // userId -> roomId
         this.socketToPlayer = new Map(); // socketId -> userId
         this.nextRoomId = 1;
+        this.io = null;
+    }
+
+    setIO(io) {
+        this.io = io;
     }
 
     // Crear una nueva sala
     createRoom(player) {
-        const roomId = `room_${this.nextRoomId++}`;
-        const room = new Room(roomId, player);
-        
-        this.rooms.set(roomId, room);
-        this.playerToRoom.set(player.userId, roomId);
-        this.socketToPlayer.set(player.socketId, player.userId);
+    const roomId = `room_${this.nextRoomId++}`;
+    const room = new Room(roomId, player, this.io); // ← AGREGAR this.io
+    
+    this.rooms.set(roomId, room);
+    this.playerToRoom.set(player.userId, roomId);
+    this.socketToPlayer.set(player.socketId, player.userId);
 
-        console.log(`🚪 Sala creada: ${roomId} por ${player.username}`);
-        
-        return { success: true, roomId, room };
-    }
+    console.log(`🚪 Sala creada: ${roomId} por ${player.username}`);
+    
+    return { success: true, roomId, room };
+}
 
     // Unirse a una sala existente
     joinRoom(roomId, player) {
