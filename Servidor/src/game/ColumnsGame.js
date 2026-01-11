@@ -269,14 +269,32 @@ class ColumnsGame {
 
     // Obtener estado completo del juego
     getGameState() {
-        return {
-            grid: this.player.getGridUpdate(),
-            currentPiece: this.currentPiece ? this.currentPiece.getPositions() : null,
-            nextPiece: this.nextPiece ? this.nextPiece.gems : null,
-            score: this.player.score,
-            isGameOver: this.isGameOver
-        };
+    // Obtener TODAS las gemas del grid, no solo las actualizadas
+    const allNodes = [];
+    
+    for (let x = 0; x < 6; x++) {
+        for (let y = 0; y < 12; y++) {
+            const node = this.player.grid[x][y];
+            allNodes.push({
+                x: node.x,
+                y: node.y,
+                type: node.type
+            });
+        }
     }
+    
+    return {
+        grid: {
+            playerId: this.player.userId,
+            playerName: this.player.username,
+            updatedNodes: allNodes // Enviar TODO el grid
+        },
+        currentPiece: this.currentPiece ? this.currentPiece.getPositions() : null,
+        nextPiece: this.nextPiece ? this.nextPiece.gems : null,
+        score: this.player.score,
+        isGameOver: this.isGameOver
+    };
+}
 }
 
 module.exports = ColumnsGame;
